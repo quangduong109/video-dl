@@ -62,3 +62,18 @@ def test_build_ydl_opts_cookies_from_browser():
     )
     assert opts["cookiesfrombrowser"] == ("chrome",)
     assert "cookiefile" not in opts
+
+
+from yt_dl.downloader import _needs_cookies
+
+
+def test_needs_cookies_true_for_login_messages():
+    assert _needs_cookies(Exception("Login required"))
+    assert _needs_cookies(Exception("Video is private"))
+    assert _needs_cookies(Exception("HTTP Error 403: Forbidden"))
+    assert _needs_cookies(Exception("Please sign in to continue"))
+
+
+def test_needs_cookies_false_for_other_errors():
+    assert not _needs_cookies(Exception("Unable to extract video title"))
+    assert not _needs_cookies(Exception("connection timed out"))
