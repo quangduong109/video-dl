@@ -36,3 +36,28 @@ def test_detect_site_youtube(url):
 def test_detect_site_generic():
     assert detect_site("https://vimeo.com/123456") == "generic"
     assert detect_site("https://example.com/page") == "generic"
+
+
+from yt_dl.sites import format_for
+
+
+def test_format_for_facebook():
+    assert format_for("facebook", "video") == "bestvideo*+bestaudio/best"
+    assert format_for("facebook", "mp3") == "bestaudio/best"
+
+
+def test_format_for_youtube_unchanged():
+    assert (
+        format_for("youtube", "video")
+        == "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"
+    )
+    assert format_for("youtube", "mp3") == "bestaudio/best"
+
+
+def test_format_for_generic():
+    assert format_for("generic", "video") == "bestvideo*+bestaudio/best"
+    assert format_for("generic", "mp3") == "bestaudio/best"
+
+
+def test_format_for_default_fmt():
+    assert format_for("facebook") == "bestvideo*+bestaudio/best"

@@ -38,3 +38,26 @@ def detect_site(url: str) -> str:
     if host in _YOUTUBE_HOSTS:
         return "youtube"
     return "generic"
+
+
+_FORMATS = {
+    "facebook": {
+        "video": "bestvideo*+bestaudio/best",
+        "mp3": "bestaudio/best",
+    },
+    "youtube": {
+        "video": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
+        "mp3": "bestaudio/best",
+    },
+    "generic": {
+        "video": "bestvideo*+bestaudio/best",
+        "mp3": "bestaudio/best",
+    },
+}
+
+_DEFAULT = "bestvideo*+bestaudio/best"
+
+
+def format_for(site: str, fmt: str = "video") -> str:
+    """Return the yt-dlp format string for the given site and output format."""
+    return _FORMATS.get(site, _FORMATS["generic"]).get(fmt, _DEFAULT)
