@@ -3,7 +3,13 @@ from pathlib import Path
 from .downloader import download
 
 
-def download_batch(file_path: str, output_dir: str, fmt: str = "video") -> None:
+def download_batch(
+    file_path: str,
+    output_dir: str,
+    fmt: str = "video",
+    cookies: str | None = None,
+    cookies_from_browser: str | None = None,
+) -> None:
     urls = _read_urls(file_path)
     if not urls:
         print("No URLs found in batch file.")
@@ -13,7 +19,7 @@ def download_batch(file_path: str, output_dir: str, fmt: str = "video") -> None:
     for i, url in enumerate(urls, 1):
         print(f"\n[{i}/{total}] {url}")
         try:
-            download(url, output_dir, fmt)
+            download(url, output_dir, fmt, cookies, cookies_from_browser)
         except Exception as e:
             print(f"  Error: {e}")
 
