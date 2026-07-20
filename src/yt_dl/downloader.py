@@ -3,6 +3,8 @@ from pathlib import Path
 
 import yt_dlp
 
+from .sites import detect_site, format_for
+
 
 def check_dependency(name: str) -> None:
     if not shutil.which(name):
@@ -26,34 +28,75 @@ def check_dependency(name: str) -> None:
         raise SystemExit(1)
 
 
-def download(url: str, output_dir: str, fmt: str = "video") -> None:
-    check_dependency("ffmpeg")
-    check_dependency("deno")
+def required_deps(site: str) -> list[str]:
+    """External tools needed for the given site. deno is YouTube-only."""
+    deps = ["ffmpeg"]
+    if site == "youtube":
+        deps.append("deno")
+    return deps
 
-    output_path = Path(output_dir)
-    output_path.mkdir(parents=True, exist_ok=True)
 
-    ydl_opts: dict = {
+def build_ydl_opts(
+    url: str,
+    fmt: str,
+    output_path: Path,
+    cookies: str | None = None,
+    cookies_from_browser: str | None = None,
+) -> dict:
+    """Build the yt-dlp options dict (pure: no network, no side effects)."""
+    site = detect_site(url)
+    opts: dict = {
         "outtmpl": str(output_path / "%(title)s.%(ext)s"),
         "progress_hooks": [_progress_hook],
+        "format": format_for(site, fmt),
     }
-
     if fmt == "mp3":
-        ydl_opts["format"] = "bestaudio/best"
-        ydl_opts["postprocessors"] = [
+        opts["postprocessors"] = [
             {
                 "key": "FFmpegExtractAudio",
                 "preferredcodec": "mp3",
                 "preferredquality": "0",
             }
         ]
-    else:
-        ydl_opts["format"] = (
-            "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"
-        )
+    if cookies:
+        opts["cookiefile"] = cookies
+    elif cookies_from_browser:
+        opts["cookiesfrombrowser"] = (cookies_from_browser,)
+    return opts
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
+
+def _needs_cookies(exc: BaseException) -> bool:
+    """True when an exception message suggests authentication is required."""
+    msg = str(exc).lower()
+    return any(k in msg for k in ("login", "private", "sign in", "authorize", "403"))
+
+
+def download(
+    url: str,
+    output_dir: str,
+    fmt: str = "video",
+    cookies: str | None = None,
+    cookies_from_browser: str | None = None,
+) -> None:
+    site = detect_site(url)
+    for dep in required_deps(site):
+        check_dependency(dep)
+
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    ydl_opts = build_ydl_opts(url, fmt, output_path, cookies, cookies_from_browser)
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+    except yt_dlp.utils.DownloadError as e:
+        if _needs_cookies(e) and not (cookies or cookies_from_browser):
+            print(
+                "\n  HD/private video needs cookies — "
+                "try --cookies-from-browser chrome"
+            )
+        raise
 
 
 def _progress_hook(d: dict) -> None:
