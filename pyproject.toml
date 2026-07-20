@@ -1,0 +1,15 @@
+[project]
+name = "yt-dl"
+version = "0.1.0"
+description = "YouTube video/audio downloader CLI"
+requires-python = ">=3.10"
+dependencies = [
+    "yt-dlp>=2025.1",
+]
+
+[project.scripts]
+yt-dl = "yt_dl.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
