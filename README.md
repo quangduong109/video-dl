@@ -1,6 +1,6 @@
 # yt-dl
 
-A simple CLI tool to download YouTube videos or extract audio as MP3.
+A simple CLI tool to download videos from YouTube, Facebook, and 1000+ other sites — or extract audio as MP3.
 
 Built with Python and [yt-dlp](https://github.com/yt-dlp/yt-dlp).
 
@@ -8,7 +8,7 @@ Built with Python and [yt-dlp](https://github.com/yt-dlp/yt-dlp).
 
 - Python 3.10+
 - [ffmpeg](https://ffmpeg.org/) — required for downloading and converting media
-- [deno](https://deno.com/) — required by yt-dlp for YouTube extraction
+- [deno](https://deno.com/) — required by yt-dlp **for YouTube extraction only** (not needed for Facebook or other sites)
 
 ### Install prerequisites (macOS)
 
@@ -47,14 +47,38 @@ yt-dl --batch urls.txt
 yt-dl --batch urls.txt --format mp3
 ```
 
+## Facebook
+
+Download Facebook videos at the best quality available. Public videos work
+without login; HD / private / restricted videos need cookies.
+
+```bash
+# Public Facebook video (best available quality, no login)
+yt-dl https://www.facebook.com/watch?v=VIDEO_ID
+
+# fb.watch short links work too
+yt-dl https://fb.watch/ABC123/
+
+# HD or private video — read cookies from your browser
+yt-dl https://www.facebook.com/watch?v=VIDEO_ID --cookies-from-browser chrome
+
+# Or use a Netscape cookies.txt file
+yt-dl https://www.facebook.com/watch?v=VIDEO_ID --cookies cookies.txt
+```
+
+> **Tip:** `--cookies-from-browser` supports `chrome`, `firefox`, `safari`,
+> `edge`, and `brave`. Using cookies is the reliable way to get true HD quality.
+
 ## Options
 
 | Flag        | Default       | Description                              |
 |-------------|---------------|------------------------------------------|
-| `url`       | —             | YouTube video or playlist URL            |
+| `url`       | —             | Video URL (YouTube, Facebook, or other yt-dlp-supported site) |
 | `--format`  | `video`       | Output format: `video` or `mp3`          |
 | `--output`  | `./downloads` | Output directory                         |
 | `--batch`   | —             | Path to a text file with URLs            |
+| `--cookies` | —             | Path to a Netscape `cookies.txt` (HD/private videos) |
+| `--cookies-from-browser` | — | `chrome\|firefox\|safari\|edge\|brave` |
 
 ## Batch File Format
 
