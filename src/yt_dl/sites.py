@@ -46,7 +46,7 @@ _FORMATS = {
         "mp3": "bestaudio/best",
     },
     "youtube": {
-        "video": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
+        "video": "bestvideo*+bestaudio/best",
         "mp3": "bestaudio/best",
     },
     "generic": {

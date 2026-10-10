@@ -46,11 +46,8 @@ def test_format_for_facebook():
     assert format_for("facebook", "mp3") == "bestaudio/best"
 
 
-def test_format_for_youtube_unchanged():
-    assert (
-        format_for("youtube", "video")
-        == "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"
-    )
+def test_format_for_youtube_max_quality():
+    assert format_for("youtube", "video") == "bestvideo*+bestaudio/best"
     assert format_for("youtube", "mp3") == "bestaudio/best"
 
 

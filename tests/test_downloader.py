@@ -25,9 +25,9 @@ def test_build_ydl_opts_facebook_video_format():
     assert "cookiesfrombrowser" not in opts
 
 
-def test_build_ydl_opts_youtube_video_format_unchanged():
+def test_build_ydl_opts_youtube_video_max_quality():
     opts = build_ydl_opts("https://youtu.be/abc", "video", Path("/tmp/out"))
-    assert opts["format"] == "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"
+    assert opts["format"] == "bestvideo*+bestaudio/best"
 
 
 def test_build_ydl_opts_mp3_adds_postprocessor():
