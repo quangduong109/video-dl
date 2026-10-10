@@ -74,6 +74,12 @@ def test_needs_cookies_true_for_login_messages():
     assert _needs_cookies(Exception("Please sign in to continue"))
 
 
+def test_needs_cookies_true_for_not_available():
+    assert _needs_cookies(
+        Exception("ERROR: [youtube] 1j2VdrJ3ZDI: This video is not available")
+    )
+
+
 def test_needs_cookies_false_for_other_errors():
     assert not _needs_cookies(Exception("Unable to extract video title"))
     assert not _needs_cookies(Exception("connection timed out"))

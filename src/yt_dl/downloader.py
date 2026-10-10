@@ -68,7 +68,10 @@ def build_ydl_opts(
 def _needs_cookies(exc: BaseException) -> bool:
     """True when an exception message suggests authentication is required."""
     msg = str(exc).lower()
-    return any(k in msg for k in ("login", "private", "sign in", "authorize", "403"))
+    return any(
+        k in msg
+        for k in ("login", "private", "sign in", "authorize", "403", "not available")
+    )
 
 
 def download(
